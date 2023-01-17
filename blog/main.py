@@ -47,6 +47,23 @@ def all(db: Session = Depends(get_db)):
     return blogs
 
 
+@app.delete("/blogs/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete(
+    id: int,
+    db: Session = Depends(get_db),
+):
+    blog = (
+        db.query(models.Blog)
+        .filter(models.Blog.id == id)
+        .delete(synchronize_session=False)
+    )
+    if not blog:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found"
+        )
+    return blog
+
+
 @app.get("/blogs/{id}", status_code=status.HTTP_200_OK)
 def single(
     id: int,
@@ -55,7 +72,7 @@ def single(
 ):
 
     blog = db.query(models.Blog).get(id)
-    # blog = db.query(models.Blog).filter(models.Bolg.id = id).first()
+    # blog = db.query(models.Blog).filter(models.Blog.id = id).first()
 
     # if not blog:
     #     response.status_code = status.HTTP_404_NOT_FOUND
