@@ -1,5 +1,8 @@
 from fastapi import FastAPI
-from typing import Union
+from typing import Union, Optional
+
+from pydantic import BaseModel
+import uvicorn
 
 app = FastAPI()
 
@@ -32,3 +35,19 @@ def comments(id):
     # Fetch all comments of blog with id=id
 
     return {"data": ["comment1", "comment2"]}
+
+
+class Blog(BaseModel):
+    name: str
+    brief: Union[str, None] = None
+    body: str
+    published: Optional[bool]
+
+
+@app.post("/blogs")
+def create_post(blog: Blog):
+    return blog
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", port=5000, log_level="info")
